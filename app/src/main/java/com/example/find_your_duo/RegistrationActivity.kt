@@ -50,10 +50,17 @@ class RegistrationActivity : AppCompatActivity() {
                     Toast.makeText(this@RegistrationActivity, "sign up error", Toast.LENGTH_SHORT).show()
                 } else {
                     val userId = mAuth?.getCurrentUser()!!.uid
-                    val currentUserDbsex = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex").child("sexo")
-                    currentUserDbsex.setValue(radioButton.text)
-                    val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex").child("Name")
-                    currentUserDb.setValue(name)
+                   // val currentUserDbsex = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex").child("sexo")
+                 //   currentUserDbsex.setValue(radioButton.text)
+                   // val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex").child("Name")
+                  //  currentUserDb.setValue(name)
+
+                    val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex")
+                    val userInfo: HashMap<Any?, Any?> = HashMap<Any?, Any?>()
+                    userInfo["Name"] = name
+                    userInfo["sexo"] = radioButton.text.toString()
+                    userInfo["profileImageUrl"] = "https://www.miwuki.com/wp-content/uploads/2016/11/gatito-830x623.jpg"
+                    currentUserDb.updateChildren(userInfo as Map<String, Any>)
 
                 }
             }
