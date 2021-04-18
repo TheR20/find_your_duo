@@ -1,4 +1,4 @@
-package com.example.find_your_duo.Cards
+package com.example.find_your_duo.cards
 
 import android.content.Context
 import android.view.LayoutInflater

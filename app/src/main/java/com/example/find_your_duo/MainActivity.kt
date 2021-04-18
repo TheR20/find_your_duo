@@ -4,12 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.find_your_duo.Cards.arrayAdapter
-import com.example.find_your_duo.Cards.cards
+import com.example.find_your_duo.cards.arrayAdapter
+import com.example.find_your_duo.cards.cards
+import com.example.find_your_duo.matches.MatchesActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
@@ -72,9 +72,11 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     Toast.makeText(this@MainActivity, "new Connection", Toast.LENGTH_LONG).show()
-                   // val key = FirebaseDatabase.getInstance().reference.child("Chat").push().key
-                    usersDb!!.child(dataSnapshot.key!!).child("Sex").child("connections").child("Matches").child(currentUId!!).setValue(true)
-                    usersDb!!.child(currentUId!!).child("Sex").child("connections").child("Matches").child(dataSnapshot.key!!).setValue(true)
+                   val key = FirebaseDatabase.getInstance().reference.child("Chat").push().key
+                    usersDb!!.child(dataSnapshot.key!!).child("connections").child("matches").child(currentUId!!).child("ChatId").setValue(key)
+                    usersDb!!.child(currentUId!!).child("connections").child("matches").child(dataSnapshot.key!!).child("ChatId").setValue(key)
+                    //usersDb!!.child(dataSnapshot.key!!).child("Sex").child("connections").child("Matches").child(currentUId!!).setValue(true)
+                   // usersDb!!.child(currentUId!!).child("Sex").child("connections").child("Matches").child(dataSnapshot.key!!).setValue(true)
                 }
             }
 
@@ -174,6 +176,13 @@ class MainActivity : AppCompatActivity() {
 
     fun goToSettings(view: View?) {
         val intent = Intent(this@MainActivity, SettingsActivity::class.java)
+        startActivity(intent)
+        return
+    }
+
+
+    fun goToMatches(view: View?) {
+        val intent = Intent(this@MainActivity, MatchesActivity::class.java)
         startActivity(intent)
         return
     }
