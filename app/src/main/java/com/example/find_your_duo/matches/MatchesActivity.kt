@@ -33,12 +33,12 @@ class MatchesActivity : AppCompatActivity() {
 
     private val userMatchId: Unit
         private get() {
-            val matchDb = FirebaseDatabase.getInstance().reference.child("Users").child(cusrrentUserID!!).child("Sex").child("connections").child("Matches")
+            val matchDb = FirebaseDatabase.getInstance().reference.child("Users").child(cusrrentUserID!!).child("connections").child("matches")
             matchDb.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
                         for (match in dataSnapshot.children) {
-                            FetchMatchInformation(match.key!!)
+                            fetchMatchInformation(match.key!!)
                         }
                     }
                 }
@@ -47,7 +47,7 @@ class MatchesActivity : AppCompatActivity() {
             })
         }
 
-    private fun FetchMatchInformation(key: String) {
+    private fun fetchMatchInformation(key: String) {
         val userDb = FirebaseDatabase.getInstance().reference.child("Users").child(key).child("Sex")
         userDb.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {

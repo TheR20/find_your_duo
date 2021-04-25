@@ -55,24 +55,24 @@ class ChatActivity : AppCompatActivity() {
         mRecyclerView!!.adapter = mChatAdapter
         mSendEditText = findViewById(R.id.message)
         mSendButton = findViewById(R.id.send)
-        mSendButton?.setOnClickListener(View.OnClickListener { sendMessage() })
+        mSendButton?.setOnClickListener { sendMessage() }
     }
 
     private fun sendMessage() {
         val sendMessageText = mSendEditText!!.text.toString()
-        if (!sendMessageText.isEmpty()) {
+        if (sendMessageText.isNotEmpty()) {
             val newMessageDb = mDatabaseChat!!.push()
             val newMessage: MutableMap<*, *> = HashMap<Any?, Any?>()
-            newMessage.set("createdByUser", currentUserID)
-            newMessage.set("text", sendMessageText)
+            newMessage["createdByUser"] = currentUserID
+            newMessage["text"] = sendMessageText
             newMessageDb.setValue(newMessage)
         }
         mSendEditText.run {
-            if (!sendMessageText.isEmpty()) {
+            if (sendMessageText.isNotEmpty()) {
                 val newMessageDb = mDatabaseChat!!.push()
                 val newMessage: MutableMap<*, *> = HashMap<Any?, Any?>()
-                newMessage.set("createdByUser", currentUserID)
-                newMessage.set("text", sendMessageText)
+                newMessage["createdByUser"] = currentUserID
+                newMessage["text"] = sendMessageText
                 newMessageDb.setValue(newMessage)
             }
             setText()
@@ -82,15 +82,27 @@ class ChatActivity : AppCompatActivity() {
     private val chatMessages: Unit
         private get() {
             mDatabaseChat!!.addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String) {
-                    if (dataSnapshot.exists()) {
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    if (snapshot.exists()) {
                         var message: String? = null
                         var createdByUser: String? = null
-                        if (dataSnapshot.child("text").value != null) {
-                            message = dataSnapshot.child("text").value.toString()
+                        if (snapshot.child("text").value != null) {
+                            message = snapshot.child("text").value.toString()
                         }
-                        if (dataSnapshot.child("createdByUser").value != null) {
-                            createdByUser = dataSnapshot.child("createdByUser").value.toString()
+                        if (snapshot.child("createdByUser").value != null) {
+                            createdByUser = snapshot.child("createdByUser").value.toString()
                         }
                         if (message != null && createdByUser != null) {
                             var currentUserBoolean = false
@@ -104,10 +116,10 @@ class ChatActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String) {}
-                override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
-                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String) {}
-                override fun onCancelled(databaseError: DatabaseError) {}
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    TODO("Not yet implemented")
+                }
+
             })
         }
 
