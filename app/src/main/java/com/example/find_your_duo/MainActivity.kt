@@ -45,14 +45,14 @@ class MainActivity : AppCompatActivity() {
             override fun onLeftCardExit(p0: Any?) {
                 val obj = p0 as cards
                 val userId = obj.userId
-                usersDb?.child(userId)?.child("Sex")?.child("connections")?.child("Nego")?.child(currentUId!!)?.setValue(true)
+                usersDb?.child(userId)?.child("connections")?.child("Nego")?.child(currentUId!!)?.setValue(true)
                 Toast.makeText(this@MainActivity, "Left", Toast.LENGTH_SHORT).show()
             }
 
             override fun onRightCardExit(p0: Any?) {
                 val obj = p0 as cards
                 val userId = obj.userId
-                usersDb?.child(userId)?.child("Sex")?.child("connections")?.child("Acepto")?.child(currentUId!!)?.setValue(true)
+                usersDb?.child(userId)?.child("connections")?.child("Acepto")?.child(currentUId!!)?.setValue(true)
                 isConnectionMatch(userId)
                 Toast.makeText(this@MainActivity, "Rigth", Toast.LENGTH_SHORT).show()
             }
@@ -67,12 +67,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isConnectionMatch(userId: String) {
-        val currentUserConnectionsDb = usersDb!!.child(currentUId!!).child("Sex").child("connections").child("Acepto").child(userId)
+        val currentUserConnectionsDb = usersDb!!.child(currentUId!!).child("connections").child("Acepto").child(userId)
         currentUserConnectionsDb.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     Toast.makeText(this@MainActivity, "new Connection", Toast.LENGTH_LONG).show()
                    val key = FirebaseDatabase.getInstance().reference.child("Chat").push().key
+
                     usersDb!!.child(dataSnapshot.key!!).child("connections").child("matches").child(currentUId!!).child("ChatId").setValue(key)
                     usersDb!!.child(currentUId!!).child("connections").child("matches").child(dataSnapshot.key!!).child("ChatId").setValue(key)
                     //usersDb!!.child(dataSnapshot.key!!).child("Sex").child("connections").child("Matches").child(currentUId!!).setValue(true)
@@ -101,8 +102,8 @@ class MainActivity : AppCompatActivity() {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    if (dataSnapshot.child("Sex").child("Name").value != null) {
-                        userSex = dataSnapshot.child("Sex").child("sexo").value.toString()
+                    if (dataSnapshot.child("Name").value != null) {
+                        userSex = dataSnapshot.child("sexo").value.toString()
                         when (userSex) {
                             "Male" -> oppositeUserSex = "Female"
                             "Female" -> oppositeUserSex = "Male"
@@ -133,22 +134,22 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-                if (dataSnapshot.child("Sex").child("Name").value != null){
+                if (dataSnapshot.child("Name").value != null){
 
                     if (dataSnapshot.exists() &&
                             (dataSnapshot.key.toString() != idUsuario) &&
-                            !dataSnapshot.child("Sex")?.child("connections")?.child("Acepto")?.hasChild(currentUId!!) &&
-                            !dataSnapshot.child("Sex")?.child("connections")?.child("Nego")?.hasChild(currentUId!!) )
+                            !dataSnapshot.child("connections")?.child("Acepto")?.hasChild(currentUId!!) &&
+                            !dataSnapshot.child("connections")?.child("Nego")?.hasChild(currentUId!!) )
                     {
-                        if (dataSnapshot.child("Sex").child("Sexo").value.toString() == oppositeUserSex) {
+                        if (dataSnapshot.child("Sexo").value.toString() == oppositeUserSex) {
                             var profileImageUrl = "default"
                         }
                         var profileImageUrl = "default"
-                        if (dataSnapshot.child("Sex").child("profileImageUrl").value != "default") {
-                            profileImageUrl = dataSnapshot.child("Sex").child("profileImageUrl").value.toString()
+                        if (dataSnapshot.child("profileImageUrl").value != "default") {
+                            profileImageUrl = dataSnapshot.child("profileImageUrl").value.toString()
                         }
-                        al.add(dataSnapshot.child("Sex").child("Name").value.toString())
-                        val item = cards(dataSnapshot.key.toString(), dataSnapshot.child("Sex").child("Name").value.toString(),profileImageUrl)
+                        al.add(dataSnapshot.child("Name").value.toString())
+                        val item = cards(dataSnapshot.key.toString(), dataSnapshot.child("Name").value.toString(),profileImageUrl)
                         rowItems!!.add(item)
                         arrayAdapter!!.notifyDataSetChanged()
 

@@ -49,7 +49,7 @@ class SettingsActivity : AppCompatActivity() {
         mConfirm = findViewById<View>(R.id.confirm) as Button
         mAuth = FirebaseAuth.getInstance()
         userId = mAuth?.currentUser!!.uid
-        mUserDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId!!).child("Sex")
+        mUserDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId!!)
         userInfo
         mProfileImage!!.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -77,8 +77,8 @@ class SettingsActivity : AppCompatActivity() {
                             phone = map["phone"].toString()
                             mPhoneField!!.setText(phone)
                         }
-                        if (map["sex"] != null) {
-                            userSex = map["sex"].toString()
+                        if (map["sexo"] != null) {
+                            userSex = map["sexo"].toString()
                         }
                         Glide.with(mProfileImage!!.context).clear(mProfileImage!!)
                         if (map["profileImageUrl"] != null) {

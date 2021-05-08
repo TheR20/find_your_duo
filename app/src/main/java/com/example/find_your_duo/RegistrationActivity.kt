@@ -55,7 +55,7 @@ class RegistrationActivity : AppCompatActivity() {
                    // val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex").child("Name")
                   //  currentUserDb.setValue(name)
 
-                    val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId).child("Sex")
+                    val currentUserDb = FirebaseDatabase.getInstance().reference.child("Users").child(userId)
                     val userInfo: HashMap<Any?, Any?> = HashMap<Any?, Any?>()
                     userInfo["Name"] = name
                     userInfo["sexo"] = radioButton.text.toString()

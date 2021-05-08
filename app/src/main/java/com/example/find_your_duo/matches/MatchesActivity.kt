@@ -48,7 +48,7 @@ class MatchesActivity : AppCompatActivity() {
         }
 
     private fun fetchMatchInformation(key: String) {
-        val userDb = FirebaseDatabase.getInstance().reference.child("Users").child(key).child("Sex")
+        val userDb = FirebaseDatabase.getInstance().reference.child("Users").child(key)
         userDb.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {

@@ -1,17 +1,23 @@
 
 package com.example.find_your_duo.chat
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.find_your_duo.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
+
+var mDatabaseUser: DatabaseReference? = null
+var mDatabaseChat: DatabaseReference? = null
+var mDatabaseChatChild: DatabaseReference? = null
+var IdMatch: String? = null
+var secundMatch : String = ""
 class ChatActivity : AppCompatActivity() {
 
     private var mRecyclerView: RecyclerView? = null
@@ -22,13 +28,14 @@ class ChatActivity : AppCompatActivity() {
     private var currentUserID: String? = null
     private var matchId: String? = null
     private var chatId: String? = null
-        private get() {
+
+        get() {
             mDatabaseUser!!.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        field = dataSnapshot.value.toString()
+                        var field = dataSnapshot.value.toString()
                         mDatabaseChat = mDatabaseChat!!.child(field!!)
-                        chatMessages
+
                     }
                 }
 
@@ -36,8 +43,7 @@ class ChatActivity : AppCompatActivity() {
             })
             return chatId
         }
-    var mDatabaseUser: DatabaseReference? = null
-    var mDatabaseChat: DatabaseReference? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +52,7 @@ class ChatActivity : AppCompatActivity() {
         currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
         mDatabaseUser = FirebaseDatabase.getInstance().reference.child("Users").child(currentUserID!!).child("connections").child("matches").child(matchId!!).child("ChatId")
         mDatabaseChat = FirebaseDatabase.getInstance().reference.child("Chat")
+
         mRecyclerView = findViewById<View>(R.id.recyclerView) as RecyclerView
         mRecyclerView!!.isNestedScrollingEnabled = false
         mRecyclerView!!.setHasFixedSize(false)
@@ -56,6 +63,11 @@ class ChatActivity : AppCompatActivity() {
         mSendEditText = findViewById(R.id.message)
         mSendButton = findViewById(R.id.send)
         mSendButton?.setOnClickListener { sendMessage() }
+
+        getChatID()
+//        secundMatch = IdMatch!!
+       // chatMessages
+        gotchaMessages()
     }
 
     private fun sendMessage() {
@@ -63,9 +75,11 @@ class ChatActivity : AppCompatActivity() {
         if (sendMessageText.isNotEmpty()) {
             val newMessageDb = mDatabaseChat!!.push()
             val newMessage: MutableMap<*, *> = HashMap<Any?, Any?>()
-            newMessage["createdByUser"] = currentUserID
-            newMessage["text"] = sendMessageText
-            newMessageDb.setValue(newMessage)
+           // newMessage["createdByUser"] = currentUserID
+           // newMessage["text"] = sendMessageText
+            newMessageDb.child("createdByUser").setValue(currentUserID)
+            newMessageDb.child("text").setValue(sendMessageText)
+
         }
         mSendEditText.run {
             if (sendMessageText.isNotEmpty()) {
@@ -74,30 +88,55 @@ class ChatActivity : AppCompatActivity() {
                 newMessage["createdByUser"] = currentUserID
                 newMessage["text"] = sendMessageText
                 newMessageDb.setValue(newMessage)
+
             }
+           // mSendEditText!!.getText().clear()
             setText()
+            lastchild()
         }
     }
 
-    private val chatMessages: Unit
-        private get() {
-            mDatabaseChat!!.addChildEventListener(object : ChildEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
 
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
+    private fun gotchaMessages() {
+        mDatabaseChat!!.addChildEventListener(object : ChildEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                var z_name = "a"
+            }
 
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    TODO("Not yet implemented")
-                }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
 
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                chatMessages
+            }
+
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+
+                val kakita = snapshot.key.toString()
+                val kakota = IdMatch
+                val f = 1
+                if(kakita==kakota){
                     if (snapshot.exists()) {
                         var message: String? = null
                         var createdByUser: String? = null
+                        var test = snapshot.value
+                        var z_name = "a"
+                        for (snapshot in snapshot.children) {
+                            z_name = snapshot.child("text").value.toString()
+                            message = snapshot.child("text").value.toString()
+                            createdByUser = snapshot.child("createdByUser").value.toString()
+                            if (message != null && createdByUser != null) {
+                                var currentUserBoolean = false
+                                if (createdByUser == currentUserID) {
+                                    currentUserBoolean = true
+                                }
+                                val newMessage = ChatObject(message, currentUserBoolean)
+                                resultsChat.add(newMessage)
+                                mChatAdapter!!.notifyDataSetChanged()
+                            }
+                        }
+             /*           val a = z_name
                         if (snapshot.child("text").value != null) {
                             message = snapshot.child("text").value.toString()
                         }
@@ -112,12 +151,146 @@ class ChatActivity : AppCompatActivity() {
                             val newMessage = ChatObject(message, currentUserBoolean)
                             resultsChat.add(newMessage)
                             mChatAdapter!!.notifyDataSetChanged()
+                        }*/
+                    }
+                }
+
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+
+            }
+        })
+    }
+
+
+
+
+    private fun lastchild(){
+         mDatabaseChat!!.orderByKey().limitToLast(1).addChildEventListener(object : ChildEventListener {
+             override fun onCancelled(error: DatabaseError) {
+
+             }
+
+             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+
+             }
+
+             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+
+             }
+
+             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                 if (snapshot.exists()) {
+                     var message: String? = null
+                     var createdByUser: String? = null
+                     var test = snapshot.value
+                     var z_name = "a"
+                     val a = z_name
+                     if (snapshot.child("text").value != null) {
+                         message = snapshot.child("text").value.toString()
+                     }
+                     if (snapshot.child("createdByUser").value != null) {
+                         createdByUser = snapshot.child("createdByUser").value.toString()
+                     }
+
+
+
+                     if (message != null && createdByUser != null) {
+                         var currentUserBoolean = false
+                         if (createdByUser == currentUserID) {
+                             currentUserBoolean = true
+                         }
+                         val newMessage = ChatObject(message, currentUserBoolean)
+                         resultsChat.add(newMessage)
+                         mChatAdapter!!.notifyDataSetChanged()
+                     }
+                 }
+             }
+
+             override fun onChildRemoved(snapshot: DataSnapshot) {
+
+             }
+
+
+         })
+
+
+    }
+
+private val chatMessages: Unit
+        private get() {
+            mDatabaseChat!!.orderByKey().limitToLast(1).addChildEventListener(object : ChildEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    if (snapshot.exists()) {
+                        var message: String? = null
+                        var createdByUser: String? = null
+                        var test = snapshot.value
+                        var z_name = "a"
+                        val a = z_name
+                        if (snapshot.child("text").value != null) {
+                            message = snapshot.child("text").value.toString()
+                        }
+                        if (snapshot.child("createdByUser").value != null) {
+                            createdByUser = snapshot.child("createdByUser").value.toString()
+                        }
+
+
+
+                        if (message != null && createdByUser != null) {
+                            var currentUserBoolean = false
+                            if (createdByUser == currentUserID) {
+                                currentUserBoolean = true
+                            }
+                            val newMessage = ChatObject(message, currentUserBoolean)
+                            resultsChat.add(newMessage)
+                            mChatAdapter!!.notifyDataSetChanged()
                         }
                     }
                 }
 
+                override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
+              /*      var number = 0
+                    for (snapshot in dataSnapshot.children) {
+                        number= dataSnapshot.childrenCount.toInt()
+                    }
+                    var numberinside = 0
+                    if (dataSnapshot.exists()) {
+                        var message: String? = null
+                        var createdByUser: String? = null
+                        var test = dataSnapshot.value
+                        var z_name = "a"
+                        val a = z_name
+                        if (dataSnapshot.child("text").value != null) {
+                                message = dataSnapshot.child("text").value.toString()
+                            }
+                            if (dataSnapshot.child("createdByUser").value != null) {
+                                createdByUser = dataSnapshot.child("createdByUser").value.toString()
+                            }
+
+                            numberinside++
+
+                                if (message != null && createdByUser != null) {
+                                    var currentUserBoolean = false
+                                    if (createdByUser == currentUserID) {
+                                        currentUserBoolean = true
+                                    }
+                                    val newMessage = ChatObject(message, currentUserBoolean)
+                                    resultsChat.add(newMessage)
+                                    mChatAdapter!!.notifyDataSetChanged()
+                                }
+                    } */
+
+                }
+
                 override fun onChildRemoved(snapshot: DataSnapshot) {
-                    TODO("Not yet implemented")
+
                 }
 
             })
@@ -128,6 +301,26 @@ class ChatActivity : AppCompatActivity() {
         private get() = resultsChat
 }
 
+
+
+private fun getChatID(){
+
+    mDatabaseUser!!.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            if (dataSnapshot.exists()) {
+             ///  var quesito = mDatabaseUser!!.get().result.toString()
+               var field = dataSnapshot.value.toString()
+              //  if(mDatabaseUser.toString() == field)
+                mDatabaseChat = mDatabaseChat!!.child(field!!)
+                IdMatch= field
+                mDatabaseChatChild = FirebaseDatabase.getInstance().reference.child("Chat").child(field!!)
+
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {}
+    })
+}
 private fun EditText?.setText() {
 
 }
