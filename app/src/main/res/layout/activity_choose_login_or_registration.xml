@@ -5,17 +5,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChooseLoginOrRegistrationActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:gravity="center|bottom"
+    android:background="@drawable/background"
+
+    >
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="login"
-        android:id="@+id/login"/>
+        android:id="@+id/login"
+        android:layout_alignParentBottom="true"
+        android:background="#2CAF99"
+        android:layout_margin="10dp"/>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="register"
-        android:id="@+id/register"/>
+        android:id="@+id/register"
+        android:layout_alignParentBottom="true"
+        android:background="#CA0909"
+        android:layout_margin="10dp"/>
 
 </LinearLayout>

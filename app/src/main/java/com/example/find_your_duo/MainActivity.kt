@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
     private var currentUId: String? = null
     private var usersDb: DatabaseReference? = null
+    private var usersDBSex: DatabaseReference? = null
     private val i = 0
     private var arrayAdapter: arrayAdapter? = null
 
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         arrayAdapter = arrayAdapter(this, R.layout.item, rowItems)
         val flingContainer = findViewById<View>(R.id.frame) as SwipeFlingAdapterView
         flingContainer.adapter = arrayAdapter
+        usersDBSex = FirebaseDatabase.getInstance().reference.child("Users").child(currentUId!!)
         flingContainer.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
             override fun removeFirstObjectInAdapter() {
                 Log.d("LIST", "removed object!")
@@ -64,6 +66,25 @@ class MainActivity : AppCompatActivity() {
         // Optionally add an OnItemClickListener
         flingContainer.setOnItemClickListener { itemPosition, dataObject -> Toast.makeText(this@MainActivity, "Item Clicked", Toast.LENGTH_SHORT).show() }
 
+    }
+
+
+    private fun getBuscarSexo(){
+        val currentUserConnectionsDb = usersDb!!.child(currentUId!!).orderByChild("buscarSexo").equalTo("Male")
+        val valorSexBuscar = currentUserConnectionsDb.toString()
+        var valorBuscarSex =""
+        currentUserConnectionsDb.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    valorBuscarSex = snapshot.toString()
+                }
+            }
+
+        })
     }
 
     private fun isConnectionMatch(userId: String) {
@@ -103,10 +124,11 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     if (dataSnapshot.child("Name").value != null) {
-                        userSex = dataSnapshot.child("sexo").value.toString()
+                        userSex = dataSnapshot.child("buscarSexo").value.toString()
                         when (userSex) {
-                            "Male" -> oppositeUserSex = "Female"
-                            "Female" -> oppositeUserSex = "Male"
+                            "Male" -> oppositeUserSex = "Male"
+                            "Female" -> oppositeUserSex = "Female"
+                            "Both" -> oppositeUserSex = "Both"
                         }
                         oppositeSexUsers
                     }
@@ -141,17 +163,17 @@ class MainActivity : AppCompatActivity() {
                             !dataSnapshot.child("connections")?.child("Acepto")?.hasChild(currentUId!!) &&
                             !dataSnapshot.child("connections")?.child("Nego")?.hasChild(currentUId!!) )
                     {
-                        if (dataSnapshot.child("Sexo").value.toString() == oppositeUserSex) {
+                        if (dataSnapshot.child("sexo").value.toString() == oppositeUserSex || oppositeUserSex == "Both") {
                             var profileImageUrl = "default"
+                            if (dataSnapshot.child("profileImageUrl").value != "default") {
+                                profileImageUrl = dataSnapshot.child("profileImageUrl").value.toString()
+                            }
+                            al.add(dataSnapshot.child("Name").value.toString())
+                            val item = cards(dataSnapshot.key.toString(), dataSnapshot.child("Name").value.toString(),profileImageUrl,dataSnapshot.child("biografia").value.toString())
+                            rowItems!!.add(item)
+                            arrayAdapter!!.notifyDataSetChanged()
                         }
-                        var profileImageUrl = "default"
-                        if (dataSnapshot.child("profileImageUrl").value != "default") {
-                            profileImageUrl = dataSnapshot.child("profileImageUrl").value.toString()
-                        }
-                        al.add(dataSnapshot.child("Name").value.toString())
-                        val item = cards(dataSnapshot.key.toString(), dataSnapshot.child("Name").value.toString(),profileImageUrl)
-                        rowItems!!.add(item)
-                        arrayAdapter!!.notifyDataSetChanged()
+
 
                     }
 

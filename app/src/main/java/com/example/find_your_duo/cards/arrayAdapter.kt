@@ -19,12 +19,15 @@ class arrayAdapter(context: Context?, resourceId: Int, items: List<cards?>?) : A
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var convertView = convertView
         val card_item = getItem(position)
+
         if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item, parent, false)
+            convertView = LayoutInflater.from(context).inflate(R.layout.item, parent, false)
         }
         val name = convertView!!.findViewById<View>(R.id.name) as TextView
+        val biografia = convertView!!.findViewById<View>(R.id.biografia) as TextView
         val image = convertView.findViewById<View>(R.id.image) as ImageView
         name.text = card_item!!.name
+        biografia.text = card_item!!.biografia
         image.setImageResource(R.mipmap.ic_launcher)
         when (card_item.profileImageUrl) {
             "default" -> Glide.with(convertView.context).load(R.mipmap.ic_launcher).into(image)

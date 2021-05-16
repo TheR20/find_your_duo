@@ -8,10 +8,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.android.gms.tasks.OnSuccessListener
@@ -33,11 +30,13 @@ class SettingsActivity : AppCompatActivity() {
     private var mUserDatabase: DatabaseReference? = null
     private var userId: String? = null
     private var name: String? = null
-    private var phone: String? = null
+    private var biografia: String? = null
     private var profileImageUrl: String? = null
     private var userSex: String? = null
     private var resultUri: Uri? = null
-
+    private var mRadioGroupBuscar: RadioGroup? = null
+    private var valormRadioGroupBuscar: RadioGroup? = null
+private lateinit var radioButtonBuscaSexo: RadioButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +48,10 @@ class SettingsActivity : AppCompatActivity() {
         mConfirm = findViewById<View>(R.id.confirm) as Button
         mAuth = FirebaseAuth.getInstance()
         userId = mAuth?.currentUser!!.uid
+
         mUserDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId!!)
+        mRadioGroupBuscar = findViewById<View>(R.id.radioGroupBusca) as RadioGroup
+
         userInfo
         mProfileImage!!.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -73,9 +75,9 @@ class SettingsActivity : AppCompatActivity() {
                             name = map["Name"].toString()
                             mNameField!!.setText(name)
                         }
-                        if (map["phone"] != null) {
-                            phone = map["phone"].toString()
-                            mPhoneField!!.setText(phone)
+                        if (map["biografia"] != null) {
+                            biografia = map["biografia"].toString()
+                            mPhoneField!!.setText(biografia)
                         }
                         if (map["sexo"] != null) {
                             userSex = map["sexo"].toString()
@@ -97,10 +99,16 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun saveUserInformation() {
         name = mNameField!!.text.toString()
-        phone = mPhoneField!!.text.toString()
+        biografia = mPhoneField!!.text.toString()
+        val selectIdBuscaSexo = mRadioGroupBuscar!!.checkedRadioButtonId
+        val radioButtonBuscaSexo = findViewById<View>(selectIdBuscaSexo) as RadioButton
+
+
+       var buscasex = radioButtonBuscaSexo.text.toString()
         val userInfo: HashMap<String, String?> = HashMap<String, String?>()
         userInfo["Name"] = name
-        userInfo["phone"] = phone
+        userInfo["biografia"] = biografia
+        userInfo["buscarSexo"] = buscasex
         mUserDatabase?.updateChildren(userInfo as Map<String, Any>)
         val a = 1
         if (resultUri != null) {

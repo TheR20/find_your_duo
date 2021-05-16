@@ -1,8 +1,12 @@
 
 package com.example.find_your_duo.chat
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.find_your_duo.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_chat.*
 
 
 var mDatabaseUser: DatabaseReference? = null
@@ -21,6 +26,7 @@ var secundMatch : String = ""
 class ChatActivity : AppCompatActivity() {
 
     private var mRecyclerView: RecyclerView? = null
+
     private var mChatAdapter: RecyclerView.Adapter<*>? = null
     private var mChatLayoutManager: RecyclerView.LayoutManager? = null
     private var mSendEditText: EditText? = null
@@ -63,11 +69,13 @@ class ChatActivity : AppCompatActivity() {
         mSendEditText = findViewById(R.id.message)
         mSendButton = findViewById(R.id.send)
         mSendButton?.setOnClickListener { sendMessage() }
-
+        mRecyclerView!!.viewTreeObserver.addOnGlobalLayoutListener { scrollToEnd() }
         getChatID()
 //        secundMatch = IdMatch!!
        // chatMessages
         gotchaMessages()
+      //  lastchild()
+        gotchachilds()
     }
 
     private fun sendMessage() {
@@ -93,10 +101,34 @@ class ChatActivity : AppCompatActivity() {
            // mSendEditText!!.getText().clear()
             setText()
             lastchild()
+            mSendEditText!!.text.clear();
+            closeKeyBoard()
         }
     }
+//asdasdasdasdasdasdasd
 
+    private fun closeKeyBoard() {
+        val view = this.currentFocus
+        if (view != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+    
 
+    private fun gotchachilds() {
+        mDatabaseChat!!.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                lastchild()
+            }
+        })
+    }
+    private fun scrollToEnd() =
+            (mChatAdapter?.itemCount?.minus(1)).takeIf { it!! > 0 }?.let(recyclerView::smoothScrollToPosition)
     private fun gotchaMessages() {
         mDatabaseChat!!.addChildEventListener(object : ChildEventListener {
             override fun onCancelled(error: DatabaseError) {
@@ -108,7 +140,7 @@ class ChatActivity : AppCompatActivity() {
             }
 
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                chatMessages
+             //   thischildchat()
             }
 
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
@@ -164,6 +196,42 @@ class ChatActivity : AppCompatActivity() {
     }
 
 
+    private fun thischildchat(){
+        mDatabaseChat!!.orderByKey().limitToLast(1).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+            /*    if (snapshot.exists()) {
+                    var message: String? = null
+                    var createdByUser: String? = null
+                    var test = snapshot.value
+                    var z_name = "a"
+                    val a = z_name
+                    if (snapshot.child("text").value != null) {
+                        message = snapshot.child("text").value.toString()
+                    }
+                    if (snapshot.child("createdByUser").value != null) {
+                        createdByUser = snapshot.child("createdByUser").value.toString()
+                    }
+
+
+
+                    if (message != null && createdByUser != null) {
+                        var currentUserBoolean = false
+                        if (createdByUser == currentUserID) {
+                            currentUserBoolean = true
+                        }
+                        val newMessage = ChatObject(message, currentUserBoolean)
+                        resultsChat.add(newMessage)
+                        mChatAdapter!!.notifyDataSetChanged()
+                    }
+                }*/
+            }
+
+        })
+    }
 
 
     private fun lastchild(){
@@ -177,11 +245,7 @@ class ChatActivity : AppCompatActivity() {
              }
 
              override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-
-             }
-
-             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                 if (snapshot.exists()) {
+           /*      if (snapshot.exists()) {
                      var message: String? = null
                      var createdByUser: String? = null
                      var test = snapshot.value
@@ -205,6 +269,34 @@ class ChatActivity : AppCompatActivity() {
                          resultsChat.add(newMessage)
                          mChatAdapter!!.notifyDataSetChanged()
                      }
+                 }*/
+             }
+
+             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                 if (snapshot.exists()) {
+                     var message2: String? = null
+                     var createdByUser: String? = null
+                     var test = snapshot.value
+                     var z_name = "a"
+                     val a = z_name
+                     if (snapshot.child("text").value != null) {
+                         message2 = snapshot.child("text").value.toString()
+                     }
+                     if (snapshot.child("createdByUser").value != null) {
+                         createdByUser = snapshot.child("createdByUser").value.toString()
+                     }
+
+
+
+                     if (message2 != null && createdByUser != null) {
+                         var currentUserBoolean = false
+                         if (createdByUser == currentUserID) {
+                             currentUserBoolean = true
+                         }
+                         val newMessage = ChatObject(message2, currentUserBoolean)
+                         resultsChat.add(newMessage)
+                         mChatAdapter!!.notifyDataSetChanged()
+                     }
                  }
              }
 
@@ -220,80 +312,8 @@ class ChatActivity : AppCompatActivity() {
 
 private val chatMessages: Unit
         private get() {
-            mDatabaseChat!!.orderByKey().limitToLast(1).addChildEventListener(object : ChildEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                }
-
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    if (snapshot.exists()) {
-                        var message: String? = null
-                        var createdByUser: String? = null
-                        var test = snapshot.value
-                        var z_name = "a"
-                        val a = z_name
-                        if (snapshot.child("text").value != null) {
-                            message = snapshot.child("text").value.toString()
-                        }
-                        if (snapshot.child("createdByUser").value != null) {
-                            createdByUser = snapshot.child("createdByUser").value.toString()
-                        }
 
 
-
-                        if (message != null && createdByUser != null) {
-                            var currentUserBoolean = false
-                            if (createdByUser == currentUserID) {
-                                currentUserBoolean = true
-                            }
-                            val newMessage = ChatObject(message, currentUserBoolean)
-                            resultsChat.add(newMessage)
-                            mChatAdapter!!.notifyDataSetChanged()
-                        }
-                    }
-                }
-
-                override fun onChildAdded(dataSnapshot: DataSnapshot, previousChildName: String?) {
-              /*      var number = 0
-                    for (snapshot in dataSnapshot.children) {
-                        number= dataSnapshot.childrenCount.toInt()
-                    }
-                    var numberinside = 0
-                    if (dataSnapshot.exists()) {
-                        var message: String? = null
-                        var createdByUser: String? = null
-                        var test = dataSnapshot.value
-                        var z_name = "a"
-                        val a = z_name
-                        if (dataSnapshot.child("text").value != null) {
-                                message = dataSnapshot.child("text").value.toString()
-                            }
-                            if (dataSnapshot.child("createdByUser").value != null) {
-                                createdByUser = dataSnapshot.child("createdByUser").value.toString()
-                            }
-
-                            numberinside++
-
-                                if (message != null && createdByUser != null) {
-                                    var currentUserBoolean = false
-                                    if (createdByUser == currentUserID) {
-                                        currentUserBoolean = true
-                                    }
-                                    val newMessage = ChatObject(message, currentUserBoolean)
-                                    resultsChat.add(newMessage)
-                                    mChatAdapter!!.notifyDataSetChanged()
-                                }
-                    } */
-
-                }
-
-                override fun onChildRemoved(snapshot: DataSnapshot) {
-
-                }
-
-            })
         }
 
     private val resultsChat = ArrayList<ChatObject>()

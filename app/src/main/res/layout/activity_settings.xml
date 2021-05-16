@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SettingsActivity"
-    android:orientation="vertical"
-    android:padding="20sp">
+    android:fillViewport="true"
+    android:background="@drawable/background3">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
     <ImageView
-        android:layout_width="100sp"
-        android:layout_height="100sp"
+        android:layout_width="300sp"
+        android:layout_height="300sp"
         android:id="@+id/profileImage"
         android:src="@mipmap/ic_launcher"
-        android:layout_marginBottom="20sp" />
+        android:layout_marginBottom="10sp"
+        android:layout_gravity="center"
+        />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,20 +33,87 @@
         android:layout_height="wrap_content"
         android:id="@+id/phone"
         android:background="@null"
-        android:hint="Phone"
+        android:hint="Bio"
         android:layout_marginBottom="20sp"
-        android:inputType="phone"/>
+        />
+    <CheckBox
+        android:id="@+id/checkBoxPc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="PC" />
+    <CheckBox
+        android:id="@+id/checkBoxPlastation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Plastation" />
+    <CheckBox
+        android:id="@+id/checkBoxXbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Xbox" />
+    <CheckBox
+        android:id="@+id/checkBoxNintendo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Nintendo" />
+    <CheckBox
+        android:id="@+id/checkBoxMovil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Movil" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="BUSCANDO" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioGroupBusca"
+            android:orientation="horizontal">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Male" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Female" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Both" />
+        </RadioGroup>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/confirm"
-        android:text="confirm"/>
+        android:text="confirm"
+        android:background="#2CAF99"
+        android:layout_margin="10dp"
+        />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/back"
-        android:text="back"/>
+        android:background="#CA0909"
+        android:text="back"
+        android:layout_margin="5dp"/>
 
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>
