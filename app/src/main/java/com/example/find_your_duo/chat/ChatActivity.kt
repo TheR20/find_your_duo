@@ -58,7 +58,6 @@ class ChatActivity : AppCompatActivity() {
         currentUserID = FirebaseAuth.getInstance().currentUser!!.uid
         mDatabaseUser = FirebaseDatabase.getInstance().reference.child("Users").child(currentUserID!!).child("connections").child("matches").child(matchId!!).child("ChatId")
         mDatabaseChat = FirebaseDatabase.getInstance().reference.child("Chat")
-
         mRecyclerView = findViewById<View>(R.id.recyclerView) as RecyclerView
         mRecyclerView!!.isNestedScrollingEnabled = false
         mRecyclerView!!.setHasFixedSize(false)

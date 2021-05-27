@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.CheckBox
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,11 @@ class MainActivity : AppCompatActivity() {
     private var usersDBSex: DatabaseReference? = null
     private val i = 0
     private var arrayAdapter: arrayAdapter? = null
+    private var PC: String?=null
+    private var Playstation: String?=null
+    private var Xbox : String?=null
+    private var Nintendo : String?=null
+    private var Movil: String?=null
 
     var listView: ListView? = null
     var rowItems: MutableList<cards>? = null
@@ -130,6 +136,11 @@ class MainActivity : AppCompatActivity() {
                             "Female" -> oppositeUserSex = "Female"
                             "Both" -> oppositeUserSex = "Both"
                         }
+                        PC = if(dataSnapshot.child("PC").value.toString() == "true") "true" else "false"
+                        Playstation = if(dataSnapshot.child("Playstation").value.toString() == "true") "true" else "false"
+                        Xbox = if(dataSnapshot.child("Xbox").value.toString() == "true") "true" else "false"
+                        Nintendo = if(dataSnapshot.child("Nintendo").value.toString() == "true") "true" else "false"
+                        Movil = if(dataSnapshot.child("Movil").value.toString() == "true") "true" else "false"
                         oppositeSexUsers
                     }
                 }
@@ -163,18 +174,24 @@ class MainActivity : AppCompatActivity() {
                             !dataSnapshot.child("connections")?.child("Acepto")?.hasChild(currentUId!!) &&
                             !dataSnapshot.child("connections")?.child("Nego")?.hasChild(currentUId!!) )
                     {
-                        if (dataSnapshot.child("sexo").value.toString() == oppositeUserSex || oppositeUserSex == "Both") {
-                            var profileImageUrl = "default"
-                            if (dataSnapshot.child("profileImageUrl").value != "default") {
-                                profileImageUrl = dataSnapshot.child("profileImageUrl").value.toString()
+                        if (dataSnapshot.child("sexo").value.toString() == oppositeUserSex || oppositeUserSex == "Both"){
+                            if(   getConsole(dataSnapshot.child("PC").value.toString() , PC)
+                                    ||  getConsole(dataSnapshot.child("Playstation").value.toString() , Playstation)
+                                    ||  getConsole(dataSnapshot.child("Xbox").value.toString() , Xbox)
+                                    ||  getConsole(dataSnapshot.child("Nintendo").value.toString() , Nintendo)
+                                    ||  getConsole(dataSnapshot.child("Movil").value.toString() , Movil) ) {
+
+                                var profileImageUrl = "default"
+                                if (dataSnapshot.child("profileImageUrl").value != "default") {
+                                    profileImageUrl = dataSnapshot.child("profileImageUrl").value.toString()
+                                }
+                                al.add(dataSnapshot.child("Name").value.toString())
+                                val item = cards(dataSnapshot.key.toString(), dataSnapshot.child("Name").value.toString(),profileImageUrl,dataSnapshot.child("biografia").value.toString())
+                                rowItems!!.add(item)
+                                arrayAdapter!!.notifyDataSetChanged()
                             }
-                            al.add(dataSnapshot.child("Name").value.toString())
-                            val item = cards(dataSnapshot.key.toString(), dataSnapshot.child("Name").value.toString(),profileImageUrl,dataSnapshot.child("biografia").value.toString())
-                            rowItems!!.add(item)
-                            arrayAdapter!!.notifyDataSetChanged()
+
                         }
-
-
                     }
 
                 }
@@ -188,6 +205,10 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+
+    fun getConsole(hijoMatch: String, hijoUsuario: String?): Boolean{
+        return hijoMatch == "true" && hijoMatch == hijoUsuario
+    }
 
     fun logoutUser(view: View?) {
         FirebaseAuth.getInstance().signOut();
