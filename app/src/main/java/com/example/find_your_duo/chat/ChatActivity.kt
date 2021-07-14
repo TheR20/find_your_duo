@@ -17,7 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_chat.*
 
-
+//
 var mDatabaseUser: DatabaseReference? = null
 var mDatabaseChat: DatabaseReference? = null
 var mDatabaseChatChild: DatabaseReference? = null

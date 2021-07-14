@@ -19,8 +19,6 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 class SettingsActivity : AppCompatActivity() {
-
-
     private var mNameField: EditText? = null
     private var mPhoneField: EditText? = null
     private var mBack: Button? = null
@@ -36,12 +34,13 @@ class SettingsActivity : AppCompatActivity() {
     private var resultUri: Uri? = null
     private var mRadioGroupBuscar: RadioGroup? = null
     private var valormRadioGroupBuscar: RadioGroup? = null
-private lateinit var radioButtonBuscaSexo: RadioButton
+    private lateinit var radioButtonBuscaSexo: RadioButton
     private var PC: CheckBox?=null
     private var Playstation: CheckBox?=null
     private var Xbox : CheckBox?=null
     private var Nintendo : CheckBox?=null
     private var Movil: CheckBox?=null
+    private  var aString: String?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -56,6 +55,19 @@ private lateinit var radioButtonBuscaSexo: RadioButton
         mUserDatabase = FirebaseDatabase.getInstance().reference.child("Users").child(userId!!)
         mRadioGroupBuscar = findViewById<View>(R.id.radioGroupBusca) as RadioGroup
 
+        val selectIdBuscaSexo = mRadioGroupBuscar!!.checkedRadioButtonId
+//        val radioButtonBuscaSexo = findViewById<View>(selectIdBuscaSexo) as RadioButton
+        PC = findViewById<View>(R.id.checkBoxPc) as  CheckBox?
+
+        Xbox = findViewById<View>(R.id.checkBoxXbox) as  CheckBox?
+        Nintendo = findViewById<View>(R.id.checkBoxNintendo) as  CheckBox?
+        Movil = findViewById<View>(R.id.checkBoxMovil) as  CheckBox?
+
+        Playstation = findViewById<View>(R.id.checkBoxPlaytation) as CheckBox?
+       // Playstation?.jumpDrawablesToCurrentState()
+      //  Playstation?.isChecked = true
+        Playstation?.clearFocus()
+        Playstation?.isChecked
         userInfo
         mProfileImage!!.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK)
@@ -68,6 +80,8 @@ private lateinit var radioButtonBuscaSexo: RadioButton
             return@OnClickListener
         })
     }
+
+
 
     private val userInfo: Unit
         private get() {
@@ -85,6 +99,12 @@ private lateinit var radioButtonBuscaSexo: RadioButton
                         }
                         if (map["sexo"] != null) {
                             userSex = map["sexo"].toString()
+                        }
+                        if (map["Playstation"].toString() != "false") {
+                            var aString = map["Playstation"].toString()
+                         //   Playstation?.isChecked
+                          //  Playstation?.isChecked = true
+                           // Playstation?.jumpDrawablesToCurrentState()
                         }
                         Glide.with(mProfileImage!!.context).clear(mProfileImage!!)
                         if (map["profileImageUrl"] != null) {
@@ -104,24 +124,18 @@ private lateinit var radioButtonBuscaSexo: RadioButton
     private fun saveUserInformation() {
         name = mNameField!!.text.toString()
         biografia = mPhoneField!!.text.toString()
-        val selectIdBuscaSexo = mRadioGroupBuscar!!.checkedRadioButtonId
-        val radioButtonBuscaSexo = findViewById<View>(selectIdBuscaSexo) as RadioButton
-        PC = findViewById<View>(R.id.checkBoxPc) as  CheckBox?
-        Playstation = findViewById<View>(R.id.checkBoxPlaytation) as CheckBox?
-        Xbox = findViewById<View>(R.id.checkBoxXbox) as  CheckBox?
-        Nintendo = findViewById<View>(R.id.checkBoxNintendo) as  CheckBox?
-        Movil = findViewById<View>(R.id.checkBoxMovil) as  CheckBox?
+
 
        var buscasex = radioButtonBuscaSexo.text.toString()
         val userInfo: java.util.HashMap<Any?, Any?> = java.util.HashMap<Any?, Any?>()
         userInfo["Name"] = name
         userInfo["biografia"] = biografia
-        userInfo["buscarSexo"] = buscasex
-        userInfo["PC"] = checkIfItsChecked(PC!!)
-        userInfo["Playstation"] = checkIfItsChecked(Playstation!!)
-        userInfo["Xbox"] = checkIfItsChecked(Xbox!!)
-        userInfo["Nintendo"] = checkIfItsChecked(Nintendo!!)
-        userInfo["Movile"] = checkIfItsChecked(Movil!!)
+       // userInfo["buscarSexo"] = buscasex
+      //  userInfo["PC"] = checkIfItsChecked(PC!!)
+        userInfo["Playstation"] = checkIfItsCheckedString(aString!!)
+       // userInfo["Xbox"] = checkIfItsChecked(Xbox!!)
+      //  userInfo["Nintendo"] = checkIfItsChecked(Nintendo!!)
+     //   userInfo["Movile"] = checkIfItsChecked(Movil!!)
         mUserDatabase?.updateChildren(userInfo as Map<String, Any>)
         val a = 1
         if (resultUri != null) {
@@ -139,7 +153,7 @@ private lateinit var radioButtonBuscaSexo: RadioButton
             uploadTask.addOnFailureListener { finish() }
             uploadTask.addOnSuccessListener(OnSuccessListener { taskSnapshot ->
                 val downloadUrl = taskSnapshot.storage.downloadUrl
-                while (!downloadUrl.isSuccessful());
+                while (!downloadUrl.isSuccessful);
                 val resultdowloadUrl: Uri? = downloadUrl.getResult()
                 val userInfo: MutableMap<String, Any?> = HashMap<String, Any?>()
                 Log.e("uri12",resultdowloadUrl.toString()+"This is uri of image download");
@@ -164,6 +178,9 @@ private lateinit var radioButtonBuscaSexo: RadioButton
     }
     private fun checkIfItsChecked(checkBox: CheckBox): Boolean{
         return checkBox.isChecked
+    }
+    private fun checkIfItsCheckedString(string: String): Boolean{
+        return string == "true"
     }
 }
 
